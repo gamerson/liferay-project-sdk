@@ -1,0 +1,103 @@
+buildscript {
+	dependencies {
+		classpath group: "de.undercouch", name: "gradle-download-task", version: "latest.release"
+	}
+
+	repositories {
+		maven {
+			url "https://repository-cdn.liferay.com/nexus/content/groups/public"
+		}
+		maven {
+			url "https://oss.sonatype.org/content/repositories/snapshots/"
+		}
+	}
+}
+
+apply plugin: "de.undercouch.download"
+apply plugin: "java"
+
+task downloadBlade(type: Download) {
+	src bladeLatestDownloadURL
+	dest "shared/download/blade.jar"
+	onlyIfModified true
+}
+
+task downloadBND(type: Download) {
+	src bndLatestDownloadURL
+	dest "shared/download/biz.aQute.bnd.jar"
+	onlyIfModified true
+}
+
+task downloadBundleSupport(type: Download) {
+	src bundleSupportDownloadBase + "/" + bundleSupportVersion + "/" + bundleSupportName
+	dest "shared/download/com.liferay.portal.tools.bundle.support.jar"
+	onlyIfModified true
+}
+
+task downloadGW(type: Download) {
+	src gwLatestDownloadURL
+	dest "shared/download/gw.jar"
+	onlyIfModified true
+}
+
+task downloadJPM(type: Download) {
+	src jpmcliLatestDownloadURL
+	dest "shared/download/biz.aQute.jpm.run.jar"
+	onlyIfModified true
+}
+
+task verifyBlade(type: Verify, dependsOn: downloadBlade) {
+	src "shared/download/blade.jar"
+	algorithm "MD5"
+	checksum bladeLatestMD5
+}
+
+task verifyBND(type: Verify, dependsOn: downloadBND) {
+	src "shared/download/biz.aQute.bnd.jar"
+	algorithm "MD5"
+	checksum bndLatestMD5
+}
+
+task verifyBundleSupport(type: Verify, dependsOn: downloadBundleSupport) {
+	src "shared/download/com.liferay.portal.tools.bundle.support.jar"
+	algorithm "MD5"
+	checksum bundleSupportMD5
+}
+
+task verifyGW(type: Verify, dependsOn: downloadGW) {
+	src "shared/download/gw.jar"
+	algorithm "MD5"
+	checksum gwLatestMD5
+}
+
+task verifyJPM(type: Verify, dependsOn: downloadJPM) {
+	src "shared/download/biz.aQute.jpm.run.jar"
+	algorithm "MD5"
+	checksum jpmcliLatestMD5
+}
+
+task buildProjectSDKOSX(type:Exec) {
+	def command = [installBuilderHome + '/bin/builder', 'build', './installers/liferay-project-sdk.xml', 'osx']
+
+	commandLine command
+}
+
+task buildProjectSDKLinux64(type:Exec) {
+	def command = [installBuilderHome + '/bin/builder', 'build', './installers/liferay-project-sdk.xml', 'linux-x64']
+
+	commandLine command
+}
+
+task buildProjectSDKWindows(type:Exec) {
+	def command = [installBuilderHome + '/bin/builder', 'build', './installers/liferay-project-sdk.xml', 'windows']
+
+	commandLine command
+}
+
+processResources {
+	dependsOn verifyBlade, verifyBND, verifyBundleSupport, verifyGW, verifyJPM
+}
+
+build {
+	dependsOn buildProjectSDKOSX, buildProjectSDKLinux64, buildProjectSDKWindows
+}
