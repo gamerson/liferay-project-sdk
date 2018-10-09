@@ -1,5 +1,6 @@
 buildscript {
 	dependencies {
+		classpath group: "com.liferay", name: "com.liferay.gradle.plugins.source.formatter", version: "latest.release"
 		classpath group: "de.undercouch", name: "gradle-download-task", version: "latest.release"
 	}
 
@@ -13,6 +14,7 @@ buildscript {
 	}
 }
 
+apply plugin: "com.liferay.source.formatter"
 apply plugin: "de.undercouch.download"
 apply plugin: "java"
 
@@ -106,6 +108,16 @@ repositories {
 	maven {
 		url "https://repository-cdn.liferay.com/nexus/content/groups/public"
 	}
+}
+
+check.dependsOn checkSourceFormatting
+
+formatSource {
+	maxLineLength = 120
+}
+
+checkSourceFormatting {
+	maxLineLength = 120
 }
 
 dependencies {
