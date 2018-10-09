@@ -101,3 +101,14 @@ processResources {
 build {
 	dependsOn buildProjectSDKOSX, buildProjectSDKLinux64, buildProjectSDKWindows
 }
+
+repositories {
+	maven {
+		url "https://repository-cdn.liferay.com/nexus/content/groups/public"
+	}
+}
+
+dependencies {
+	testCompile group: "org.junit.jupiter", name: "junit-jupiter-api", version: "5.3.1"
+	testCompile group: "org.junit.jupiter", name: "junit-jupiter-engine", version: "5.3.1"
+}
