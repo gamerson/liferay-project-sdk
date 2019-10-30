@@ -36,8 +36,13 @@ task buildWorkspacewithDevStudioCEInstallers
 task buildWorkspacewithDevStudioCELinux64(type:Exec)
 task buildWorkspacewithDevStudioCEOSX(type:Exec)
 task buildWorkspacewithDevStudioCEWindows(type:Exec)
+task buildWorkspacewithDevStudioDXPInstallers
+task buildWorkspacewithDevStudioDXPLinux64(type:Exec)
+task buildWorkspacewithDevStudioDXPOSX(type:Exec)
+task buildWorkspacewithDevStudioDXPWindows(type:Exec)
 task deleteWorkspaceOsxApp(type: Delete)
 task deleteWorkspacewithDevStudioCEOsxApp(type: Delete)
+task deleteWorkspacewithDevStudioDXPOsxApp(type: Delete)
 task downloadBlade(type: Download)
 task downloadBND(type: Download)
 task downloadBundleSupport(type: Download)
@@ -123,6 +128,10 @@ deleteWorkspacewithDevStudioCEOsxApp{
 	delete "./outputs/LiferayWorkspacewithDevStudioCommunityEdition-"+getTimestamp()+"-osx-installer.app"
 }
 
+deleteWorkspacewithDevStudioDXPOsxApp{
+	delete "./outputs/LiferayWorkspacewithDevStudioDXP-"+getTimestamp()+"-osx-installer.app"
+}
+
 buildWorkspaceLinux64{
 	dependsOn processResources
 
@@ -163,12 +172,36 @@ buildWorkspacewithDevStudioCEWindows{
 	commandLine command
 }
 
+buildWorkspacewithDevStudioDXPOSX{
+	dependsOn processResources
+
+	def command = [installBuilderHome + '/bin/builder', 'build', './installers/liferay-workspace-with-devstudio-dxp.xml', 'osx', '--setvars', 'project.version='+getTimestamp(), '--setvars', 'studioDir='+studioDir]
+
+	commandLine command
+}
+
+buildWorkspacewithDevStudioDXPLinux64{
+	dependsOn processResources
+
+	def command = [installBuilderHome + '/bin/builder', 'build', './installers/liferay-workspace-with-devstudio-dxp.xml', 'linux-x64', '--setvars', 'project.version='+getTimestamp(), '--setvars', 'studioDir='+studioDir]
+
+	commandLine command
+}
+
+buildWorkspacewithDevStudioDXPWindows{
+	dependsOn processResources
+
+	def command = [installBuilderHome + '/bin/builder', 'build', './installers/liferay-workspace-with-devstudio-dxp.xml', 'windows', '--setvars', 'project.version='+getTimestamp(), '--setvars', 'studioDir='+studioDir]
+
+	commandLine command
+}
+
 def getTimestamp() {
 	return new Date().format('yyyyMMddHHmmss')
 }
 
 build {
-	dependsOn buildWorkspaceInstallers, buildWorkspacewithDevStudioCEInstallers
+	dependsOn buildWorkspaceInstallers, buildWorkspacewithDevStudioCEInstallers, buildWorkspacewithDevStudioDXPInstallers
 }
 
 buildWorkspaceInstallers{
@@ -177,6 +210,14 @@ buildWorkspaceInstallers{
 
 buildWorkspacewithDevStudioCEInstallers{
 	dependsOn buildWorkspacewithDevStudioCEOSX, buildWorkspacewithDevStudioCELinux64, buildWorkspacewithDevStudioCEWindows, deleteWorkspacewithDevStudioCEOsxApp
+}
+
+buildWorkspacewithDevStudioDXPInstallers{
+	dependsOn buildWorkspacewithDevStudioDXPOSX, buildWorkspacewithDevStudioDXPLinux64, buildWorkspacewithDevStudioDXPWindows, deleteWorkspacewithDevStudioDXPOsxApp
+}
+
+clean {
+	delete "./outputs"
 }
 
 dependencies {
