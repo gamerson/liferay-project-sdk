@@ -34,7 +34,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,7 +44,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @DisplayName("MacOS installers")
 @EnabledOnOs(OS.MAC)
 @ExtendWith(TempFolderExtension.class)
-@TestInstance(Lifecycle.PER_CLASS)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class MacOSInstallersTest {
 
 	@DisplayName("headless install workspace init")
