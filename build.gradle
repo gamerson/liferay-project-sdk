@@ -28,10 +28,16 @@ checkSourceFormatting {
 	maxLineLength = 120
 }
 
+task buildWorkspaceInstallers
 task buildWorkspaceLinux64(type:Exec)
 task buildWorkspaceOSX(type:Exec)
 task buildWorkspaceWindows(type:Exec)
-task deleteOsxApp(type: Delete)
+task buildWorkspacewithDevStudioCEInstallers
+task buildWorkspacewithDevStudioCELinux64(type:Exec)
+task buildWorkspacewithDevStudioCEOSX(type:Exec)
+task buildWorkspacewithDevStudioCEWindows(type:Exec)
+task deleteWorkspaceOsxApp(type: Delete)
+task deleteWorkspacewithDevStudioCEOsxApp(type: Delete)
 task downloadBlade(type: Download)
 task downloadBND(type: Download)
 task downloadBundleSupport(type: Download)
@@ -109,18 +115,50 @@ buildWorkspaceOSX{
 	commandLine command
 }
 
-deleteOsxApp{
+deleteWorkspaceOsxApp{
 	delete "./outputs/LiferayWorkspace-"+getTimestamp()+"-osx-installer.app"
 }
 
+deleteWorkspacewithDevStudioCEOsxApp{
+	delete "./outputs/LiferayWorkspacewithDevStudioCommunityEdition-"+getTimestamp()+"-osx-installer.app"
+}
+
 buildWorkspaceLinux64{
+	dependsOn processResources
+
 	def command = [installBuilderHome + '/bin/builder', 'build', './installers/liferay-workspace.xml', 'linux-x64', '--setvars', 'project.version='+getTimestamp()]
 
 	commandLine command
 }
 
 buildWorkspaceWindows{
+	dependsOn processResources
+
 	def command = [installBuilderHome + '/bin/builder', 'build', './installers/liferay-workspace.xml', 'windows', '--setvars', 'project.version='+getTimestamp()]
+
+	commandLine command
+}
+
+buildWorkspacewithDevStudioCEOSX{
+	dependsOn processResources
+
+	def command = [installBuilderHome + '/bin/builder', 'build', './installers/liferay-workspace-with-devstudio-ce.xml', 'osx', '--setvars', 'project.version='+getTimestamp(), '--setvars', 'studioDir='+studioDir]
+
+	commandLine command
+}
+
+buildWorkspacewithDevStudioCELinux64{
+	dependsOn processResources
+
+	def command = [installBuilderHome + '/bin/builder', 'build', './installers/liferay-workspace-with-devstudio-ce.xml', 'linux-x64', '--setvars', 'project.version='+getTimestamp(), '--setvars', 'studioDir='+studioDir]
+
+	commandLine command
+}
+
+buildWorkspacewithDevStudioCEWindows{
+	dependsOn processResources
+
+	def command = [installBuilderHome + '/bin/builder', 'build', './installers/liferay-workspace-with-devstudio-ce.xml', 'windows', '--setvars', 'project.version='+getTimestamp(), '--setvars', 'studioDir='+studioDir]
 
 	commandLine command
 }
@@ -130,7 +168,15 @@ def getTimestamp() {
 }
 
 build {
-	dependsOn buildWorkspaceOSX, buildWorkspaceLinux64, buildWorkspaceWindows, deleteOsxApp
+	dependsOn buildWorkspaceInstallers, buildWorkspacewithDevStudioCEInstallers
+}
+
+buildWorkspaceInstallers{
+	dependsOn buildWorkspaceOSX, buildWorkspaceLinux64, buildWorkspaceWindows, deleteWorkspaceOsxApp
+}
+
+buildWorkspacewithDevStudioCEInstallers{
+	dependsOn buildWorkspacewithDevStudioCEOSX, buildWorkspacewithDevStudioCELinux64, buildWorkspacewithDevStudioCEWindows, deleteWorkspacewithDevStudioCEOsxApp
 }
 
 dependencies {

@@ -5,6 +5,7 @@
 .settings/
 build/
 *.iml
+*.backup
 out/
 bin/
 outputs/
