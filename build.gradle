@@ -18,98 +18,6 @@ apply plugin: "com.liferay.source.formatter"
 apply plugin: "de.undercouch.download"
 apply plugin: "java"
 
-task downloadBlade(type: Download) {
-	src bladeLatestDownloadURL
-	dest "shared/download/blade.jar"
-	onlyIfModified true
-}
-
-task downloadBND(type: Download) {
-	src bndLatestDownloadURL
-	dest "shared/download/biz.aQute.bnd.jar"
-	onlyIfModified true
-}
-
-task downloadBundleSupport(type: Download) {
-	src bundleSupportDownloadBase + "/" + bundleSupportVersion + "/" + bundleSupportName
-	dest "shared/download/com.liferay.portal.tools.bundle.support.jar"
-	onlyIfModified true
-}
-
-task downloadGW(type: Download) {
-	src gwLatestDownloadURL
-	dest "shared/download/gw.jar"
-	onlyIfModified true
-}
-
-task downloadJPM(type: Download) {
-	src jpmcliLatestDownloadURL
-	dest "shared/download/biz.aQute.jpm.run.jar"
-	onlyIfModified true
-}
-
-task verifyBlade(type: Verify, dependsOn: downloadBlade) {
-	src "shared/download/blade.jar"
-	algorithm "MD5"
-	checksum bladeLatestMD5
-}
-
-task verifyBND(type: Verify, dependsOn: downloadBND) {
-	src "shared/download/biz.aQute.bnd.jar"
-	algorithm "MD5"
-	checksum bndLatestMD5
-}
-
-task verifyBundleSupport(type: Verify, dependsOn: downloadBundleSupport) {
-	src "shared/download/com.liferay.portal.tools.bundle.support.jar"
-	algorithm "MD5"
-	checksum bundleSupportMD5
-}
-
-task verifyGW(type: Verify, dependsOn: downloadGW) {
-	src "shared/download/gw.jar"
-	algorithm "MD5"
-	checksum gwLatestMD5
-}
-
-task verifyJPM(type: Verify, dependsOn: downloadJPM) {
-	src "shared/download/biz.aQute.jpm.run.jar"
-	algorithm "MD5"
-	checksum jpmcliLatestMD5
-}
-
-task buildProjectSDKOSX(type:Exec) {
-	def command = [installBuilderHome + '/bin/builder', 'build', './installers/liferay-project-sdk.xml', 'osx']
-
-	commandLine command
-}
-
-task buildProjectSDKLinux64(type:Exec) {
-	def command = [installBuilderHome + '/bin/builder', 'build', './installers/liferay-project-sdk.xml', 'linux-x64']
-
-	commandLine command
-}
-
-task buildProjectSDKWindows(type:Exec) {
-	def command = [installBuilderHome + '/bin/builder', 'build', './installers/liferay-project-sdk.xml', 'windows']
-
-	commandLine command
-}
-
-processResources {
-	dependsOn verifyBlade, verifyBND, verifyBundleSupport, verifyGW, verifyJPM
-}
-
-build {
-	dependsOn buildProjectSDKOSX, buildProjectSDKLinux64, buildProjectSDKWindows
-}
-
-repositories {
-	maven {
-		url "https://repository-cdn.liferay.com/nexus/content/groups/public"
-	}
-}
-
 check.dependsOn checkSourceFormatting
 
 formatSource {
@@ -120,7 +28,122 @@ checkSourceFormatting {
 	maxLineLength = 120
 }
 
+task buildWorkspaceLinux64(type:Exec)
+task buildWorkspaceOSX(type:Exec)
+task buildWorkspaceWindows(type:Exec)
+task deleteOsxApp(type: Delete)
+task downloadBlade(type: Download)
+task downloadBND(type: Download)
+task downloadBundleSupport(type: Download)
+task downloadGW(type: Download)
+task downloadJPM(type: Download)
+task verifyBlade(type: Verify, dependsOn: downloadBlade)
+task verifyBND(type: Verify, dependsOn: downloadBND)
+task verifyBundleSupport(type: Verify, dependsOn: downloadBundleSupport)
+task verifyGW(type: Verify, dependsOn: downloadGW)
+task verifyJPM(type: Verify, dependsOn: downloadJPM)
+
+downloadBlade{
+	src bladeLatestDownloadURL
+	dest "shared/download/blade.jar"
+	onlyIfModified true
+}
+
+downloadBND{
+	src bndLatestDownloadURL
+	dest "shared/download/biz.aQute.bnd.jar"
+	onlyIfModified true
+}
+
+downloadBundleSupport{
+	src bundleSupportDownloadBase + "/" + bundleSupportVersion + "/" + bundleSupportName
+	dest "shared/download/com.liferay.portal.tools.bundle.support.jar"
+	onlyIfModified true
+}
+
+downloadGW{
+	src gwLatestDownloadURL
+	dest "shared/download/gw.jar"
+	onlyIfModified true
+}
+
+downloadJPM{
+	src jpmcliLatestDownloadURL
+	dest "shared/download/biz.aQute.jpm.run.jar"
+	onlyIfModified true
+}
+
+verifyBlade{
+	src "shared/download/blade.jar"
+	algorithm "MD5"
+	checksum bladeLatestMD5
+}
+
+verifyBND{
+	src "shared/download/biz.aQute.bnd.jar"
+	algorithm "MD5"
+	checksum bndLatestMD5
+}
+
+verifyBundleSupport{
+	src "shared/download/com.liferay.portal.tools.bundle.support.jar"
+	algorithm "MD5"
+	checksum bundleSupportMD5
+}
+
+verifyGW{
+	src "shared/download/gw.jar"
+	algorithm "MD5"
+	checksum gwLatestMD5
+}
+
+verifyJPM{
+	src "shared/download/biz.aQute.jpm.run.jar"
+	algorithm "MD5"
+	checksum jpmcliLatestMD5
+}
+
+buildWorkspaceOSX{
+	def command = [installBuilderHome + '/bin/builder', 'build', './installers/liferay-workspace.xml', 'osx', '--setvars', 'project.version='+getTimestamp()]
+
+	commandLine command
+}
+
+deleteOsxApp{
+	delete "./outputs/LiferayWorkspace-"+getTimestamp()+"-osx-installer.app"
+}
+
+buildWorkspaceLinux64{
+	def command = [installBuilderHome + '/bin/builder', 'build', './installers/liferay-workspace.xml', 'linux-x64', '--setvars', 'project.version='+getTimestamp()]
+
+	commandLine command
+}
+
+buildWorkspaceWindows{
+	def command = [installBuilderHome + '/bin/builder', 'build', './installers/liferay-workspace.xml', 'windows', '--setvars', 'project.version='+getTimestamp()]
+
+	commandLine command
+}
+
+def getTimestamp() {
+	return new Date().format('yyyyMMddHHmmss')
+}
+
+build {
+	dependsOn buildWorkspaceOSX, buildWorkspaceLinux64, buildWorkspaceWindows, deleteOsxApp
+}
+
 dependencies {
 	testCompile group: "org.junit.jupiter", name: "junit-jupiter-api", version: "5.3.1"
 	testCompile group: "org.junit.jupiter", name: "junit-jupiter-engine", version: "5.3.1"
+}
+
+processResources {
+	dependsOn verifyBlade, verifyBND, verifyBundleSupport, verifyGW, verifyJPM
+}
+
+repositories {
+	maven {
+		url "https://repository-cdn.liferay.com/nexus/content/groups/public"
+	}
 }
