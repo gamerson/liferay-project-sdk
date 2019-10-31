@@ -1,0 +1,13 @@
+.classpath
+.gradle/
+.idea/
+.project
+.settings/
+build/
+*.iml
+*.backup
+out/
+bin/
+outputs/
+shared/download/
+shared/lib/blade.jar
