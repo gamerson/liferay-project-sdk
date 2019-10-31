@@ -12,7 +12,7 @@
 			<platforms>all</platforms>
 			<distributionFileList>
 				<distributionFile>
-					<origin>${studioDir}/com.liferay.ide.studio-linux.gtk.x86_64.zip</origin>
+					<origin>../shared/download/com.liferay.ide.studio-linux.gtk.x86_64.zip</origin>
 				</distributionFile>
 			</distributionFileList>
 		</folder>

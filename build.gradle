@@ -48,11 +48,35 @@ task downloadBND(type: Download)
 task downloadBundleSupport(type: Download)
 task downloadGW(type: Download)
 task downloadJPM(type: Download)
+task downloadStudioLinux(type: Download)
+task downloadStudioMacosx(type: Download)
+task downloadStudioWindows(type: Download)
 task verifyBlade(type: Verify, dependsOn: downloadBlade)
 task verifyBND(type: Verify, dependsOn: downloadBND)
 task verifyBundleSupport(type: Verify, dependsOn: downloadBundleSupport)
 task verifyGW(type: Verify, dependsOn: downloadGW)
 task verifyJPM(type: Verify, dependsOn: downloadJPM)
+task verifyStudioLinux(type: Verify, dependsOn: downloadStudioLinux)
+task verifyStudioMacosx(type: Verify, dependsOn: downloadStudioMacosx)
+task verifyStudioWindows(type: Verify, dependsOn: downloadStudioWindows)
+
+downloadStudioLinux{
+	src studioDownloadBase+'com.liferay.ide.studio-linux.gtk.x86_64.zip'
+	dest "shared/download"
+	onlyIfModified true
+}
+
+downloadStudioWindows{
+	src studioDownloadBase+'com.liferay.ide.studio-win32.win32.x86_64.zip'
+	dest "shared/download"
+	onlyIfModified true
+}
+
+downloadStudioMacosx{
+	src studioDownloadBase+'com.liferay.ide.studio-macosx.cocoa.x86_64.zip'
+	dest "shared/download"
+	onlyIfModified true
+}
 
 downloadBlade{
 	src bladeLatestDownloadURL
@@ -84,6 +108,23 @@ downloadJPM{
 	onlyIfModified true
 }
 
+verifyStudioLinux{
+	src "shared/download/com.liferay.ide.studio-linux.gtk.x86_64.zip"
+	algorithm "MD5"
+	checksum studioLinuxLatestMD5
+}
+
+verifyStudioWindows{
+	src "shared/download/com.liferay.ide.studio-win32.win32.x86_64.zip"
+	algorithm "MD5"
+	checksum studioWinLatestMD5
+}
+
+verifyStudioMacosx{
+	src "shared/download/com.liferay.ide.studio-macosx.cocoa.x86_64.zip"
+	algorithm "MD5"
+	checksum studioMacLatestMD5
+}
 verifyBlade{
 	src "shared/download/blade.jar"
 	algorithm "MD5"
@@ -149,49 +190,49 @@ buildWorkspaceWindows{
 }
 
 buildWorkspacewithDevStudioCEOSX{
-	dependsOn processResources
+	dependsOn processResources, verifyStudioMacosx
 
-	def command = [installBuilderHome + '/bin/builder', 'build', './installers/liferay-workspace-with-devstudio-ce.xml', 'osx', '--setvars', 'project.version='+getTimestamp(), '--setvars', 'studioDir='+studioDir]
+	def command = [installBuilderHome + '/bin/builder', 'build', './installers/liferay-workspace-with-devstudio-ce.xml', 'osx', '--setvars', 'project.version='+getTimestamp()]
 
 	commandLine command
 }
 
 buildWorkspacewithDevStudioCELinux64{
-	dependsOn processResources
+	dependsOn processResources, verifyStudioLinux
 
-	def command = [installBuilderHome + '/bin/builder', 'build', './installers/liferay-workspace-with-devstudio-ce.xml', 'linux-x64', '--setvars', 'project.version='+getTimestamp(), '--setvars', 'studioDir='+studioDir]
+	def command = [installBuilderHome + '/bin/builder', 'build', './installers/liferay-workspace-with-devstudio-ce.xml', 'linux-x64', '--setvars', 'project.version='+getTimestamp()]
 
 	commandLine command
 }
 
 buildWorkspacewithDevStudioCEWindows{
-	dependsOn processResources
+	dependsOn processResources, verifyStudioWindows
 
-	def command = [installBuilderHome + '/bin/builder', 'build', './installers/liferay-workspace-with-devstudio-ce.xml', 'windows', '--setvars', 'project.version='+getTimestamp(), '--setvars', 'studioDir='+studioDir]
+	def command = [installBuilderHome + '/bin/builder', 'build', './installers/liferay-workspace-with-devstudio-ce.xml', 'windows', '--setvars', 'project.version='+getTimestamp()]
 
 	commandLine command
 }
 
 buildWorkspacewithDevStudioDXPOSX{
-	dependsOn processResources
+	dependsOn processResources, verifyStudioMacosx
 
-	def command = [installBuilderHome + '/bin/builder', 'build', './installers/liferay-workspace-with-devstudio-dxp.xml', 'osx', '--setvars', 'project.version='+getTimestamp(), '--setvars', 'studioDir='+studioDir]
+	def command = [installBuilderHome + '/bin/builder', 'build', './installers/liferay-workspace-with-devstudio-dxp.xml', 'osx', '--setvars', 'project.version='+getTimestamp()]
 
 	commandLine command
 }
 
 buildWorkspacewithDevStudioDXPLinux64{
-	dependsOn processResources
+	dependsOn processResources, verifyStudioLinux
 
-	def command = [installBuilderHome + '/bin/builder', 'build', './installers/liferay-workspace-with-devstudio-dxp.xml', 'linux-x64', '--setvars', 'project.version='+getTimestamp(), '--setvars', 'studioDir='+studioDir]
+	def command = [installBuilderHome + '/bin/builder', 'build', './installers/liferay-workspace-with-devstudio-dxp.xml', 'linux-x64', '--setvars', 'project.version='+getTimestamp()]
 
 	commandLine command
 }
 
 buildWorkspacewithDevStudioDXPWindows{
-	dependsOn processResources
+	dependsOn processResources, verifyStudioMacosx
 
-	def command = [installBuilderHome + '/bin/builder', 'build', './installers/liferay-workspace-with-devstudio-dxp.xml', 'windows', '--setvars', 'project.version='+getTimestamp(), '--setvars', 'studioDir='+studioDir]
+	def command = [installBuilderHome + '/bin/builder', 'build', './installers/liferay-workspace-with-devstudio-dxp.xml', 'windows', '--setvars', 'project.version='+getTimestamp()]
 
 	commandLine command
 }
